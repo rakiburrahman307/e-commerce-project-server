@@ -30,7 +30,7 @@ const loginUser = async (req, res) => {
 // Register User
 const registerNewUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { name, email, password, phone, gender } = req.body;
     // Check if email already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -38,7 +38,13 @@ const registerNewUser = async (req, res) => {
     }
     // If email doesn't exist, create new user
     const hashedPassword = await bcrypt.hash(password, 12);
-    const newUser = new User({ email, password: hashedPassword });
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword,
+      phone,
+      gender,
+    });
     await newUser.save();
     res.status(200).json({ message: "User registered successfully" });
   } catch (error) {
