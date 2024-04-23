@@ -1,11 +1,15 @@
 const express = require("express");
-const { getProducts } = require("../controllers/productControllers");
+const {
+  getProducts,
+  getSingleProduct,
+} = require("../controllers/productControllers");
+const authMiddleware = require("../middleware");
 const router = express.Router();
 
 // Get all products
 router.get("/all", getProducts);
 // // Login user
-// router.post('/login', loginUser);
+router.get("/:id", authMiddleware, getSingleProduct);
 // // Logout user
 // router.post('/logout', logoutUser);
 // // Get user profile
