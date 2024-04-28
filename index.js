@@ -5,7 +5,7 @@ const cookieParser = require("cookie-parser");
 const app = express();
 const port = process.env.PORT || 5000;
 const { dbConnection } = require("./config/dbConnection");
-const { userAuthRouter, productRouter } = require("./routes");
+const { userAuthRouter, productRouter, reviewRouter } = require("./routes");
 
 // middleware
 app.use(express.json());
@@ -21,6 +21,7 @@ app.use(cookieParser());
 // Authentication Routes
 app.use("/auth", userAuthRouter);
 app.use("/product", productRouter);
+app.use("/reviews", reviewRouter);
 
 // ------------------------------------------------------------------------------
 //-------------------------------All Authentication Routes Ends ----------------------

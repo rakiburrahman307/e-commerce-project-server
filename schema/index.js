@@ -42,9 +42,35 @@ const productSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
   });
-
+  const customerReviewSchema = new mongoose.Schema({
+    comment: {
+        type: String,
+        required: true
+    },
+    productId: {
+        type: String,
+        required: true
+    },
+    userId: {
+        type: String,
+        required: true
+    },
+    userName: {
+        type: String,
+        required: true
+    },
+    rating: {
+        type: Number,
+        required: true
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now()
+    }
+});
 module.exports = {
     userAuthSchema,
-    productSchema
+    productSchema,
+    customerReviewSchema
 
 };
