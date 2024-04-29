@@ -21,7 +21,20 @@ const getSingleProduct = async (req, res) => {
   }
 };
 
+const relatedProduct = async (req, res) => {
+  try {
+    const category = req?.params?.category;
+    console.log(category);
+    const products = await Product.find({ category: category });
+    res.status(200).send(products);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 module.exports = {
   getProducts,
   getSingleProduct,
+  relatedProduct,
 };

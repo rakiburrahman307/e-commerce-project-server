@@ -1,20 +1,23 @@
 const { Review } = require("../models");
-// get all user review 
+// get all user review
 const getReviews = async (req, res) => {
   try {
-    const reviews = await Review.find();
+    const productId = req?.params?.id;
+    const reviews = await Review.find({ productId: productId });
     res.status(200).send(reviews);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
-// post user reviews 
+// post user reviews
 const postReview = async (req, res) => {
-  const { productId, userId, userName, comment, rating } = req?.body;
-  console.log(productId, userId, userName, comment, rating);
   try {
-    const existingUserReview = await Review.findOne({userId});
+    const { productId, userId, userName, comment, rating } = req?.body;
+    const existingUserReview = await Review.findOne({
+      userId: userId,
+      productId: productId,
+    });
     if (existingUserReview) {
       return res
         .status(400)
@@ -34,8 +37,38 @@ const postReview = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+const deleteReview = async (req, res) => {
+  try {
+    const reviewId = req?.params?.id;
+    console.log(reviewId);
+    await Review.findByIdAndDelete({ _id: reviewId });
+    res.status(200).send({ message: "Review successfully deleted!" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+const updateReview = async (req, res) => {
+  try {
+    const { id, comment, rating } = req?.body;
+    console.log(id, comment, rating);
+    const updateDoc = { $set: { comment: comment, rating: rating } };
+    const result = await Review.findByIdAndUpdate(id, updateDoc, {
+      new: true,
+    });
+    if (!result) {
+      return res.status(404).send({ error: "Review not found" });
+    }
 
+    res.status(200).send({ message: "Review Updated" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ error: "Internal Server Error" });
+  }
+};
 module.exports = {
   getReviews,
   postReview,
+  deleteReview,
+  updateReview,
 };
