@@ -2,13 +2,20 @@ const { Product } = require("../models");
 
 const getProducts = async (req, res) => {
   try {
-    const products = await Product.find();
-    res.status(200).send(products);
+    // Extract skip and limit from query parameters
+    const skip = parseInt(req?.query?.skip, 10) || 0;
+    const limit = parseInt(req?.query?.limit, 10) || 10;
+    // Fetch products with pagination
+    const products = await Product.find().skip(skip).limit(limit);
+    const totalProducts = await Product.countDocuments();
+
+    res.status(200).json({ products, totalProducts });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 const getSingleProduct = async (req, res) => {
   try {
     const id = req?.params?.id;
