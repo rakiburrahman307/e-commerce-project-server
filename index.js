@@ -5,7 +5,7 @@ const cookieParser = require("cookie-parser");
 const app = express();
 const port = process.env.PORT || 5000;
 const { dbConnection } = require("./config/dbConnection");
-const { userAuthRouter, productRouter, reviewRouter, cartRouter } = require("./routes");
+const { userAuthRouter, productRouter, reviewRouter, cartRouter, wishListRouter } = require("./routes");
 
 // middleware
 app.use(express.json());
@@ -23,6 +23,7 @@ app.use("/auth", userAuthRouter);
 app.use("/product", productRouter);
 app.use("/reviews", reviewRouter);
 app.use("/cart", cartRouter);
+app.use("/wish", wishListRouter);
 
 // ------------------------------------------------------------------------------
 //------------------------------- Routes Ends ----------------------

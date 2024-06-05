@@ -22,7 +22,7 @@ const loginUser = async (req, res) => {
       secure: true,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    res.status(200).send(user);
+    res.status(200).send({ message: "Login Successful" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });

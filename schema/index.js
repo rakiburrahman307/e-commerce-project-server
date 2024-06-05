@@ -44,7 +44,24 @@ const productSchema = new mongoose.Schema({
 });
 
 // CartProductSchema
-const CartProductSchema = new mongoose.Schema({
+const cartProductSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  userId: { type: String, required: true },
+  quantity: { type: Number, required: true},
+  description: { type: String, required: true },
+  price: { type: Number, required: true },
+  discountPercentage: { type: Number, required: true },
+  rating: { type: Number, required: true },
+  stock: { type: Number, required: true },
+  brand: { type: String, required: true },
+  category: { type: String, required: true },
+  thumbnail: { type: String, required: true },
+  images: { type: [String], required: true },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+});
+// WishListProductSchema
+const wishListSchema = new mongoose.Schema({
   title: { type: String, required: true },
   userId: { type: String, required: true },
   quantity: { type: Number, required: true},
@@ -92,5 +109,6 @@ module.exports = {
   userAuthSchema,
   productSchema,
   customerReviewSchema,
-  CartProductSchema,
+  cartProductSchema,
+  wishListSchema,
 };

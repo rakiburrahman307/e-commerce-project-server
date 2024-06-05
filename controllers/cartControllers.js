@@ -1,4 +1,4 @@
-const { Cart } = require("../models");
+const { Cart, WishList } = require("../models");
 // add product to cart
 const addCartProduct = async (req, res) => {
   const product = req?.body;
@@ -69,65 +69,104 @@ const deleteCartProduct = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
- // increase product quantity
+// increase product quantity
 const increaseCartQuantity = async (req, res) => {
-    const id = req?.params?.id;
+  const id = req?.params?.id;
+  try {
+    const cartProduct = await Cart.findById(id);
+    if (!cartProduct) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+    if (cartProduct.quantity >= 20) {
+      return res.status(400).json({ error: "Quantity cannot exceed 20" });
+    }
+    cartProduct.quantity += 1;
+    await cartProduct.save();
+    res.status(200).send({ message: "Quantity Increased!" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+// decrease product quantity
+const decreaseCartQuantity = async (req, res) => {
+  const id = req?.params?.id;
+  try {
+    const cartProduct = await Cart.findById(id);
+    if (!cartProduct) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+    if (cartProduct.quantity <= 1) {
+      return res.status(400).json({ error: "Quantity cannot be less than 1" });
+    }
+    cartProduct.quantity -= 1;
+    await cartProduct.save();
+    res.status(200).send({ message: "Quantity Decreased!" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// reset product quantity
+const resetCartQuantity = async (req, res) => {
+  const id = req?.params?.id;
+  try {
+    const cartProduct = await Cart.findById(id);
+    if (!cartProduct) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+    cartProduct.quantity = 1;
+    await cartProduct.save();
+    res.status(200).send({ message: "Quantity Reset!" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+const clearCart = async (req, res) => {
+    const userId = req?.params?.userId;
     try {
-        const cartProduct = await Cart.findById(id);
-        if (!cartProduct) {
-            return res.status(404).json({ error: "Product not found" });
+        const result = await Cart.deleteMany({ userId });
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ error: "No cart items found for the user" });
         }
-        if (cartProduct.quantity >= 20) {
-            return res.status(400).json({ error: "Quantity cannot exceed 20" });
-        }
-        cartProduct.quantity += 1;
-        await cartProduct.save();
-        res.status(200).send({ message: "Quantity increased!" });
+        res.status(200).send({ message: "Cart cleared successfully!" });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal server error" });
     }
 };
- // decrease product quantity
-const decreaseCartQuantity = async (req, res) => {
-    const id = req?.params?.id;
+  
+const addCartToWishList = async (req, res) => {
+    const cartData = req?.body;
+    const { _id } = cartData;
     try {
-        const cartProduct = await Cart.findById(id);
-        if (!cartProduct) {
-            return res.status(404).json({ error: "Product not found" });
-        }
-        if (cartProduct.quantity <= 1) {
-            return res.status(400).json({ error: "Quantity cannot be less than 1" });
-        }
-        cartProduct.quantity -= 1;
-        await cartProduct.save();
-        res.status(200).send({ message: "Quantity Decreased!" });
+        // Create a new wishlist item
+        const wishlistItem = new WishList({
+            ...cartData,
+        });
+        // Save the wishlist item
+        await wishlistItem.save();
+        
+        // Remove the item from the cart
+        await Cart.findByIdAndDelete(_id);
+        
+        // Respond with a success message
+        res.status(200).json({ message: "Item added to wishlist and removed from cart successfully" });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal server error" });
     }
 };
 
-const resetCartQuantity = async (req, res) => {
-    const id = req?.params?.id;
-    try {
-        const cartProduct = await Cart.findById(id);
-        if (!cartProduct) {
-            return res.status(404).json({ error: "Product not found" });
-        }
-        cartProduct.quantity = 1;
-        await cartProduct.save();
-        res.status(200).send({ message: "Quantity reset!" });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Internal server error" });
-    }
-};
 module.exports = {
   addCartProduct,
   getCartProducts,
   deleteCartProduct,
   increaseCartQuantity,
   decreaseCartQuantity,
-  resetCartQuantity
+  resetCartQuantity,
+  clearCart,
+  addCartToWishList
 };
