@@ -3,6 +3,7 @@ const {
   getProducts,
   getSingleProduct,
   relatedProduct,
+  filteredProducts,
 } = require("../controllers/productControllers");
 const router = express.Router();
 
@@ -12,7 +13,7 @@ router.get("/all", getProducts);
 router.get("/:id", getSingleProduct);
 // get related products
 router.get('/related/:category', relatedProduct);
-// Product add to carts
-// router.post('/user', getUserProfile);
+// Product Filtered
+router.post('/filter', filteredProducts);
 
 module.exports = router;
