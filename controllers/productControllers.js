@@ -38,71 +38,54 @@ const relatedProduct = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-// filter product
 const filteredProducts = async (req, res) => {
   try {
-    const { categories, color, size, brand, price, priceRange, rating } =
-      req.body;
-
-    // Validate filters
-    if (
-      !Array.isArray(categories) ||
-      !Array.isArray(color) ||
-      !Array.isArray(size) ||
-      !Array.isArray(brand) ||
-      !Array.isArray(rating) ||
-      (price && typeof price !== "string") ||
-      !Array.isArray(priceRange) ||
-      priceRange.length !== 2 ||
-      priceRange.some(isNaN)
-    ) {
-      return res.status(400).json({ error: "Invalid filter format" });
+    const { categories, color, size, brand, minPrice, maxPrice, rating } = req.body;
+    // Input Validation
+    if (minPrice && (isNaN(minPrice) || minPrice < 0)) {
+      return res.status(400).json({ error: "Invalid minPrice format" });
     }
-
-    // Build query based on provided filters
+    if (maxPrice && (isNaN(maxPrice) || maxPrice < 0)) {
+      return res.status(400).json({ error: "Invalid maxPrice format" });
+    }
+    if (rating && (isNaN(rating) || rating < 0 || rating > 5)) {
+      return res.status(400).json({ error: "Invalid rating format" });
+    }
+    // Input Validation close
     const query = {};
 
-    if (categories.length) {
-      query.category = { $in: categories };
+    if (categories) {
+      query.category = { $in: categories.split(",") };
     }
-    if (color.length) {
-      query.color = { $in: color };
+    if (color) {
+      query.color = color;
     }
-    if (size.length) {
-      query.size = { $in: size };
+    if (size) {
+      query.size = { $in: size.split(",") };
     }
-    if (brand.length) {
-      query.brand = { $in: brand };
-    }
-    if (price) {
-      const [minPrice, maxPrice] = price.split("-").map(Number);
-      if (!isNaN(minPrice) && !isNaN(maxPrice)) {
-        query.price = { $gte: minPrice, $lte: maxPrice };
-      }
-    }
-    if (priceRange[0] >= 0 && priceRange[1] >= 0) {
-      query.price = { $gte: priceRange[0], $lte: priceRange[1] };
-    }
-    if (rating.length) {
-      query.rating = {
-        $in: rating
-          .map(Number)
-          .filter((num) => !isNaN(num) && num >= 1 && num <= 5),
-      };
+    if (brand) {
+      query.brand = brand;
     }
 
-    // Log the query for debugging
-    console.log("Query:", query);
+    if (minPrice && maxPrice) {
+      query.price = { $gte: parseFloat(minPrice), $lte: parseFloat(maxPrice) };
+    } else if (minPrice) {
+      query.price = { $gte: parseFloat(minPrice) };
+    } else if (maxPrice) {
+      query.price = { $lte: parseFloat(maxPrice) };
+    }
 
-    // Fetch filtered products from database
-    const products = await Product.find(query);
-
+    if (rating) {
+      query.rating = { $gte: parseFloat(rating) };
+    }
+    const products = await Product.find(query).lean();
     res.status(200).json(products);
   } catch (error) {
     console.error("Error fetching products:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 module.exports = {
   getProducts,
