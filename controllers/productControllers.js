@@ -1,4 +1,6 @@
+const { default: mongoose } = require("mongoose");
 const { Product } = require("../models");
+const validator = require('validator');
 
 const getProducts = async (req, res) => {
   try {
@@ -17,14 +19,27 @@ const getProducts = async (req, res) => {
 };
 
 const getSingleProduct = async (req, res) => {
+  const id = req.params.id;
+
   try {
-    const id = req?.params?.id;
-    const query = { _id: id };
-    const product = await Product.findOne(query);
+    let product;
+
+    // Check if the id is a valid ObjectId
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      product = await Product.findById(id);
+    } else {
+      // If not a valid ObjectId, assume it's a search query by name
+      product = await Product.findOne({ name: new RegExp(id, 'i') });
+    }
+
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
     res.status(200).send(product);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -40,9 +55,20 @@ const relatedProduct = async (req, res) => {
 };
 const filteredProducts = async (req, res) => {
   try {
-    const { categories, color, size, brand, minPrice, maxPrice, rating, sort } =
-      req.body;
+    const {
+      categories,
+      color,
+      size,
+      brand,
+      minPrice,
+      maxPrice,
+      rating,
+      sort,
+      page,
+      limit = 9,
+    } = req.body;
     const finalRating = parseFloat(rating?.split(",")[0]);
+
     // Input Validation
     if (minPrice && (isNaN(minPrice) || minPrice < 0)) {
       return res.status(400).json({ error: "Invalid minPrice format" });
@@ -56,6 +82,7 @@ const filteredProducts = async (req, res) => {
     ) {
       return res.status(400).json({ error: "Invalid rating format" });
     }
+
     // Input Validation close
     const query = {};
 
@@ -109,17 +136,53 @@ const filteredProducts = async (req, res) => {
         sortCriteria = {};
     }
 
-    const products = await Product.find(query).sort(sortCriteria).lean();
+    // Pagination
+    const skip = (page - 1) * limit;
+
+    const products = await Product.find(query)
+      .sort(sortCriteria)
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
     res.status(200).json(products);
   } catch (error) {
     console.error("Error fetching products:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
+const searchProductsQuery = async (req, res) => {
+  const query = req?.query?.title;
+
+  try {
+
+    if (!query) {
+      return res.status(400).json({ message: 'Invalid query parameter' });
+    }
+
+    const sanitizedQuery = validator.escape(query);
+
+    const products = await Product.find({ title: new RegExp(sanitizedQuery, 'i') })
+      .exec();
+
+    if (products.length === 0) {
+      return res.status(404).json({ message: 'No products found matching the query' });
+    }
+
+    res.status(200).json(products);
+  } catch (error) {
+    console.error('Error searching for products:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+
 
 module.exports = {
   getProducts,
   getSingleProduct,
   relatedProduct,
   filteredProducts,
+  searchProductsQuery
+
 };
