@@ -163,6 +163,7 @@ const searchProductsQuery = async (req, res) => {
     const sanitizedQuery = validator.escape(query);
 
     const products = await Product.find({ title: new RegExp(sanitizedQuery, 'i') })
+      .limit(50)
       .exec();
 
     if (products.length === 0) {
