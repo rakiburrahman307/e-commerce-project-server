@@ -10,7 +10,7 @@ const {
 const router = express.Router();
 
 // Get all products
-router.get("/all", getProducts);
+router.get("/", getProducts);
 // get specific products
 router.get("/:id", getSingleProduct);
 // get related products

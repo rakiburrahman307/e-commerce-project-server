@@ -14,7 +14,7 @@ const router = express.Router();
 // All Cart Routers
 
 router.post("/add", addCartProduct);
-router.get("/all/:id", getCartProducts);
+router.get("/:id", getCartProducts);
 router.delete("/delete/:id", deleteCartProduct);
 router.put("/increase/quantity/:id", increaseCartQuantity);
 router.put("/decrease/quantity/:id", decreaseCartQuantity);
