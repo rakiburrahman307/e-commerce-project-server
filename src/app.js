@@ -8,8 +8,8 @@ const {
   reviewRouter,
   cartRouter,
   wishListRouter,
-} = require("./routes");
-const router = require("./routes");
+} = require("./app/routes");
+const router = require("./app/routes");
 
 // middleware
 app.use(express.json());
@@ -39,5 +39,5 @@ app.get("/", async (req, res) => {
     message: "Welcome to the E-Commerce API",
   });
 });
-
+app.use(global)
 module.exports = app;
