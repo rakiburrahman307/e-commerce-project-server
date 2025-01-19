@@ -1,3 +1,10 @@
+const { ZodError } = require("zod");
+const AppError = require("../errors/AppError");
+const handleCastError = require("../errors/handleCastError");
+const handleDuplicateError = require("../errors/handleDuplicateError");
+const handleValidationError = require("../errors/handleValidationError");
+const handleZodError = require("../errors/handleZodError");
+
 const globalErrorHandler = (err, req, res, next) => {
   let statusCode = 500;
   let message = "Something went wrong!";
@@ -29,7 +36,7 @@ const globalErrorHandler = (err, req, res, next) => {
   errorSources = simplifiedError?.errorSources;
 } else if (err instanceof AppError) {
   statusCode = err?.statusCode;
-  message = err.message;
+  message = err?.message;
   errorSources = [
     {
       path: '',

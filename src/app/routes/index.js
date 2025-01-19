@@ -8,7 +8,6 @@ const express = require("express");
 const router = express.Router();
 
 const moduleRoutes = [
-
   {
     path: "/auth",
     module: userAuthRouter,

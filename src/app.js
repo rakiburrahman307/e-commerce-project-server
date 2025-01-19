@@ -1,15 +1,9 @@
 const express = require("express");
 const cors = require("cors");
-const cookieParser = require("cookie-parser");
 const app = express();
-const {
-  userAuthRouter,
-  productRouter,
-  reviewRouter,
-  cartRouter,
-  wishListRouter,
-} = require("./app/routes");
 const router = require("./app/routes");
+const globalErrorHandler = require("./app/middleware/globalErrorHandler");
+const notFound = require("./app/middleware/notFound");
 
 // middleware
 app.use(express.json());
@@ -19,7 +13,6 @@ app.use(
     credentials: true,
   })
 );
-app.use(cookieParser());
 // /api/v1
 
 // ------------------------------------------------------------------------------
@@ -27,8 +20,6 @@ app.use(cookieParser());
 //-------------------------------------------------------------------------------
 // Authentication Routes
 app.use("/api/v1", router);
-
-
 // ------------------------------------------------------------------------------
 //------------------------------- Routes Ends ----------------------
 //-------------------------------------------------------------------------------
@@ -39,5 +30,9 @@ app.get("/", async (req, res) => {
     message: "Welcome to the E-Commerce API",
   });
 });
-app.use(global)
+// global error handler
+app.use(globalErrorHandler);
+//Not Found
+app.use(notFound);
+
 module.exports = app;
