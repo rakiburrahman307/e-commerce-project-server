@@ -4,6 +4,7 @@ const handleCastError = require("../errors/handleCastError");
 const handleDuplicateError = require("../errors/handleDuplicateError");
 const handleValidationError = require("../errors/handleValidationError");
 const handleZodError = require("../errors/handleZodError");
+const config = require("../config/config");
 
 const globalErrorHandler = (err, req, res, next) => {
   let statusCode = 500;

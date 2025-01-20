@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
-const userAuthSchema = require("./userSchema");
 const productSchema = require("./productSchema");
+const userSchema = require("./userSchema");
 
 
 // CartProductSchema
@@ -80,7 +80,7 @@ const customerReviewSchema = new mongoose.Schema({
   },
 });
 module.exports = {
-  userAuthSchema,
+  userSchema,
   productSchema,
   customerReviewSchema,
   cartProductSchema,

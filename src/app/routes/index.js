@@ -12,23 +12,24 @@ const moduleRoutes = [
     path: "/auth",
     module: userAuthRouter,
   },
-  {
-    path: "/products",
-    module: productRouter,
-  },
-  {
-    path: "/reviews",
-    module: reviewRouter,
-  },
-  {
-    path: "/cart",
-    module: cartRouter,
-  },
-  {
-    path: "/wish",
-    module: wishListRouter,
-  },
+  
 ];
 
 moduleRoutes?.forEach((route) => router.use(route?.path, route?.module));
 module.exports = router;
+// {
+//   path: "/products",
+//   module: productRouter,
+// },
+// {
+//   path: "/reviews",
+//   module: reviewRouter,
+// },
+// {
+//   path: "/cart",
+//   module: cartRouter,
+// },
+// {
+//   path: "/wish",
+//   module: wishListRouter,
+// },
