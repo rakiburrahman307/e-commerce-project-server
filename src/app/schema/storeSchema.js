@@ -22,6 +22,10 @@ const storeSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    storeCoverPhoto: {
+      type: String,
+      trim: true,
+    },
     storeAddress: {
       street: { type: String, trim: true },
       city: { type: String, trim: true },
@@ -41,4 +45,5 @@ const storeSchema = new mongoose.Schema(
   }
 );
 
-module.exports = storeSchema;
+const Store = mongoose.model("stores", storeSchema);
+module.exports = Store;
