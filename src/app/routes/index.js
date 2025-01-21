@@ -1,4 +1,5 @@
 const userAuthRouter = require("./userAuthRouter");
+const storeRouter = require("./storeRouter");
 const productRouter = require("./productRoute");
 const reviewRouter = require("./reviewRoute");
 const cartRouter = require("./cartRoute");
@@ -12,7 +13,10 @@ const moduleRoutes = [
     path: "/auth",
     module: userAuthRouter,
   },
-  
+  {
+    path: "/store",
+    module: storeRouter,
+  },
 ];
 
 moduleRoutes?.forEach((route) => router.use(route?.path, route?.module));

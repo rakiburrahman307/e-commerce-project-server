@@ -2,8 +2,8 @@ const { User } = require("../models");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const catchAsync = require("../utils/catchAsync");
-const authService = require("../service/auth.service");
-const sendResponse = require("../utils/sendResponce");
+const authService = require("../service/authService");
+const sendResponse = require("../utils/sendResponse");
 const { default: status } = require("http-status");
 const config = require("../config/config");
 
@@ -32,14 +32,12 @@ const loginUser = catchAsync(async (req, res) => {
 const registerNewUser = catchAsync(async (req, res) => {
   const result = await authService.registeredUser(req?.body);
   sendResponse(res, {
-    statusCode: status.OK,
+    statusCode: status.CREATED,
     success: true,
     message: "User is created successful",
     data: result,
   });
 });
-
-
 
 // LogOut User
 const logoutUser = (req, res) => {
@@ -62,9 +60,10 @@ const getUserProfile = async (req, res) => {
   }
 };
 
-module.exports = {
+const authControllers = {
   loginUser,
   registerNewUser,
   logoutUser,
   getUserProfile,
 };
+module.exports = authControllers;

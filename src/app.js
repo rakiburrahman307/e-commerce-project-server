@@ -30,9 +30,10 @@ app.get("/", async (req, res) => {
     message: "Welcome to the E-Commerce API",
   });
 });
-// global error handler
-app.use(globalErrorHandler);
 //Not Found
 app.use(notFound);
+// global error handler
+app.use(globalErrorHandler);
+
 
 module.exports = app;
